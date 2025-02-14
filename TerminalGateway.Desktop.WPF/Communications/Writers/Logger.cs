@@ -34,7 +34,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Writers
                 var httpClientFactory = new ApiKeyHttpClientFactory();
                 Log.Logger = new LoggerConfiguration()
                     .WriteTo.DurableHttpUsingFileSizeRolledBuffers(
-                        requestUri: "https://sandbox.tripleplaypay.com/api/logs",
+                        requestUri: "https://tripleplaypay.com/api/logs",
                         batchFormatter: new ArrayBatchFormatter(),
                         textFormatter: new JsonFormatter(renderMessage: true),
                         period: TimeSpan.FromSeconds(5),

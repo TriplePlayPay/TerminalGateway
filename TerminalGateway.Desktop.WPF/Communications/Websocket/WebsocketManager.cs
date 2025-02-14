@@ -38,7 +38,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
 
         public void Connect()
         {
-            _webSocket = new WebSocket("wss://sandbox.tripleplaypay.com/pax");
+            _webSocket = new WebSocket("wss://tripleplaypay.com/pax");
             _webSocket.OnMessage += WebSocket_OnMessage;
             _webSocket.Log.Level = LogLevel.Trace;
             _webSocket.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls13;

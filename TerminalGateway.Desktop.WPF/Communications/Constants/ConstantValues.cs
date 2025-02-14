@@ -8,6 +8,6 @@ namespace TerminalGateway.Desktop.WPF.Communications.Constants
 {
     public class ConstantValues
     {
-        public const string ApiUrl = "https://sandbox.tripleplaypay.com/api";
+        public const string ApiUrl = "https://tripleplaypay.com/api";
     }
 }
