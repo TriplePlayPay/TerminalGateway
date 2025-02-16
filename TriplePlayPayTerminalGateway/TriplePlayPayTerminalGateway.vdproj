@@ -1,0 +1,157 @@
+﻿"DeployProject"
+{
+    "VSVersion" = "3:800"
+    "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
+    "IsWebType" = "8:FALSE"
+    "ProjectName" = "8:TriplePlayPayTerminalGateway"
+    "LanguageId" = "3:1033"
+    "CodePage" = "3:1252"
+    "UILanguageId" = "3:1033"
+    "SccProjectName" = "8:"
+    "SccLocalPath" = "8:"
+    "SccAuxPath" = "8:"
+    "SccProvider" = "8:"
+    "Hierarchy"
+    {
+        "Entry"
+        {
+            "MsmKey" = "8:_SELFCONTAINED_EXE"
+            "OwnerKey" = "8:_UNDEFINED"
+            "MsmSig" = "8:_UNDEFINED"
+        }
+    }
+    "Configurations"
+    {
+        "Debug"
+        {
+            "DisplayName" = "8:Debug"
+            "IsDebugOnly" = "11:TRUE"
+            "IsReleaseOnly" = "11:FALSE"
+            "OutputFilename" = "8:Debug\\TriplePlayPayTerminalGateway.msi"
+            "PackageFilesAs" = "3:2"
+            "PackageFileSize" = "3:-2147483648"
+            "CabType" = "3:1"
+            "Compression" = "3:2"
+            "SignOutput" = "11:FALSE"
+            "InstallerBootstrapper" = "3:2"
+        }
+        "Release"
+        {
+            "DisplayName" = "8:Release"
+            "IsDebugOnly" = "11:FALSE"
+            "IsReleaseOnly" = "11:TRUE"
+            "OutputFilename" = "8:Release\\TriplePlayPayTerminalGateway.msi"
+            "PackageFilesAs" = "3:2"
+            "PackageFileSize" = "3:-2147483648"
+            "CabType" = "3:1"
+            "Compression" = "3:2"
+            "SignOutput" = "11:FALSE"
+            "InstallerBootstrapper" = "3:2"
+        }
+    }
+    "Deployable"
+    {
+        "CustomAction"
+        {
+        }
+        "DefaultFeature"
+        {
+            "Name" = "8:DefaultFeature"
+            "Title" = "8:"
+            "Description" = "8:"
+        }
+        "ExternalPersistence"
+        {
+            "LaunchCondition"
+            {
+            }
+        }
+        "File"
+        {
+        }
+        "FileType"
+        {
+        }
+        "Folder"
+        {
+            "{1525181F-901A-416C-8A58-119130FE478E}:_DESKTOPFOLDER"
+            {
+                "Name" = "8:#1916"
+                "AlwaysCreate" = "11:FALSE"
+                "Property" = "8:DesktopFolder"
+            }
+            "{3C67513D-01DD-4637-8A68-80971EB9504F}:_APPFOLDER"
+            {
+                "DefaultLocation" = "8:[ProgramFiles64Folder][Manufacturer]\\[ProductName]"
+                "Name" = "8:#1925"
+                "AlwaysCreate" = "11:FALSE"
+                "Property" = "8:TARGETDIR"
+            }
+            "{1525181F-901A-416C-8A58-119130FE478E}:_PROGRAMMENUFOLDER"
+            {
+                "Name" = "8:#1919"
+                "AlwaysCreate" = "11:FALSE"
+                "Property" = "8:ProgramMenuFolder"
+            }
+        }
+        "LaunchCondition"
+        {
+        }
+        "Locator"
+        {
+        }
+        "MsiBootstrapper"
+        {
+            "LangId" = "3:1033"
+            "RequiresElevation" = "11:FALSE"
+        }
+        "Product"
+        {
+            "Name" = "8:Microsoft Visual Studio"
+            "ProductName" = "8:TriplePlayPayTerminalGateway"
+            "ProductCode" = "8:{5CB8AFC7-374F-46A3-8D04-1C4FD27CB86C}"
+            "PackageCode" = "8:{AAAA1111-2222-3333-4444-5555BBBBCCCC}"
+            "UpgradeCode" = "8:{0D6D59DB-225A-4582-BD6D-ECD0AA18F595}"
+            "DetectNewerInstalledVersion" = "11:TRUE"
+            "InstallAllUsers" = "11:FALSE"
+            "ProductVersion" = "8:1.0.0"
+            "Manufacturer" = "8:TriplePlayPay"
+            "TargetPlatform" = "3:1"
+        }
+        "Registry"
+        {
+        }
+        "Sequences"
+        {
+        }
+        "Shortcut"
+        {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DESKTOP_SHORTCUT"
+            {
+                "Name" = "8:TriplePlayPayTerminalGateway"
+                "ShowCmd" = "3:1"
+                "Target" = "8:_SELFCONTAINED_EXE"
+                "Folder" = "8:_DESKTOPFOLDER"
+                "WorkingFolder" = "8:_APPFOLDER"
+            }
+        }
+        "UserInterface"
+        {
+        }
+        "MergeModule"
+        {
+        }
+        "ProjectOutput"
+        {
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_SELFCONTAINED_EXE"
+            {
+                "SourcePath" = "8:Deploy\\TerminalGateway.Desktop.WPF.exe"
+                "Folder" = "8:_APPFOLDER"
+                "OutputConfiguration" = "8:Release|x64"
+                "OutputGroupCanonicalName" = "8:PublishItems"
+                "OutputProjectGuid" = "8:{82A6F7D4-EDD0-4B43-947A-6622A1F16857}"
+                "ShowKeyOutput" = "11:TRUE"
+            }
+        }
+    }
+}
