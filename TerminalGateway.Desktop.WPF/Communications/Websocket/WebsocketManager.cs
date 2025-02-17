@@ -38,42 +38,79 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
 
         public void Connect()
         {
+            // If an old WebSocket exists, close/cleanup it first (optional, but safer)
+            if (_webSocket != null)
+            {
+                _webSocket.OnClose -= WebSocket_OnClose;
+                _webSocket.OnError -= WebSocket_OnError;
+                _webSocket.OnMessage -= WebSocket_OnMessage;
+                _webSocket.Close();
+            }
+
             _webSocket = new WebSocket("wss://tripleplaypay.com/pax");
             _webSocket.OnMessage += WebSocket_OnMessage;
+
+            // THIS IS CRITICAL: Actually subscribe to OnClose
+            _webSocket.OnClose += WebSocket_OnClose;
+
+            // Optional: Subscribe to OnError
+            _webSocket.OnError += WebSocket_OnError;
+
+            // Logging config
             _webSocket.Log.Level = LogLevel.Trace;
-            _webSocket.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls13;
             _webSocket.Log.Output = (logData, message) =>
             {
-                // `logData` is a WebSocketSharp.LogData object; `message` is the log message string.
                 Log.Debug($"[{logData.Level}] {logData.Message}");
             };
+            _webSocket.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls13;
 
-            _webSocket.Connect();
-            isConnected = true;
+            // Reset reconnect delay in case this is a successful new connect
+            _reconnectDelay = 1000;
 
-            WebsocketTransmissionAuthModel authModel = new WebsocketTransmissionAuthModel()
+            _webSocket.Connect(); // Synchronous connect in WebSocketSharp
+            isConnected = _webSocket.IsAlive;
+
+            if (isConnected)
             {
-                Type = "AUTH",
-                ApiKey = apiKey,
-                LaneId = laneId,
-            };
-            var websocketConnectionString = JsonSerializer.Serialize(authModel);
-            var encoded = Encoding.UTF8.GetBytes(websocketConnectionString);
-            _webSocket.Send(encoded);
+                // Send AUTH
+                var authModel = new WebsocketTransmissionAuthModel
+                {
+                    Type = "AUTH",
+                    ApiKey = apiKey,
+                    LaneId = laneId,
+                };
+                var websocketConnectionString = JsonSerializer.Serialize(authModel);
+                _webSocket.Send(Encoding.UTF8.GetBytes(websocketConnectionString));
+            }
+            else
+            {
+                // Optionally do something if Connect failed
+                Log.Warning("WebSocket failed to connect.");
+            }
         }
 
         private void WebSocket_OnClose(object sender, CloseEventArgs e)
         {
             Log.Information($"WebSocket closed: {e.Reason}");
-            // Implement your reconnection logic here
-            // Be mindful of the reason for the close and implement exponential backoff to avoid flooding the server with reconnect attempts
-            Log.Information($"WebSocket closed: {e.Reason}. Reconnecting in {_reconnectDelay / 1000} seconds...");
-            Thread.Sleep(_reconnectDelay);
+            isConnected = false;
 
-            Connect(); // Reconnect
+            // If not intentional, schedule a reconnect
+            Log.Information($"Reconnecting in {_reconnectDelay / 1000} seconds...");
+            var delay = _reconnectDelay;
+            Task.Run(async () =>
+            {
+                await Task.Delay(delay);
+                Connect();
+                // Exponential backoff
+                _reconnectDelay = Math.Min(_reconnectDelay * 2, 60000);
+            });
+        }
 
-            // Increase the delay for the next attempt, up to a maximum
-            _reconnectDelay = Math.Min(_reconnectDelay * 2, 60000); // Cap at 60 seconds
+        private void WebSocket_OnError(object sender, WebSocketSharp.ErrorEventArgs e)
+        {
+            Log.Error($"WebSocket Error: {e.Message}");
+            // optional: if not connected, you might handle reconnect here
+            // but typically OnClose triggers the main reconnect logic
         }
 
         private WebsocketTransmissionChargeModel CallTerminal(TerminalMessageModel terminalMessageModel)
@@ -89,6 +126,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
                     Message = "",
                     RequestId = terminalMessageModel.RequestId,
                     ApiKey = apiKey,
+                    LaneId = terminalMessageModel.LaneId
                 };
             }
             catch (Exception ex)
@@ -101,6 +139,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
                     Message = ex.Message,
                     RequestId = terminalMessageModel.RequestId,
                     ApiKey = apiKey,
+                    LaneId = terminalMessageModel.LaneId
                 };
             }
         }
@@ -123,10 +162,16 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
             {
                 if (terminalMessageModel.Action == "charge")
                 {
-                    WebsocketTransmissionChargeModel websocketTransmissionChargeModel = CallTerminal(terminalMessageModel);
-                    var websocketChargeString = JsonSerializer.Serialize(websocketTransmissionChargeModel);
-                    var encodedChargeString = Encoding.UTF8.GetBytes(websocketChargeString);
-                    _webSocket.Send(encodedChargeString);
+                    try
+                    {
+                        WebsocketTransmissionChargeModel websocketTransmissionChargeModel = CallTerminal(terminalMessageModel);
+                        var websocketChargeString = JsonSerializer.Serialize(websocketTransmissionChargeModel);
+                        var encodedChargeString = Encoding.UTF8.GetBytes(websocketChargeString);
+                        _webSocket.Send(encodedChargeString);
+                    } catch (Exception ex)
+                    {
+                        Log.Error(ex.Message);
+                    }
                 }
                 else
                 {

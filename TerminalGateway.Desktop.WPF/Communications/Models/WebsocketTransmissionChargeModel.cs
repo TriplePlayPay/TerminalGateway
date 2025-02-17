@@ -24,5 +24,9 @@ namespace TerminalGateway.Desktop.WPF.Communications.Models
 
         [JsonPropertyName("api_key")]
         public string ApiKey { get; set; }
+
+
+        [JsonPropertyName("lane_id")]
+        public string LaneId { get; set; }
     }
 }
