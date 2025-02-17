@@ -9,35 +9,51 @@ namespace TerminalGateway.Desktop.WPF.Communications.Database
 {
     public class DatabaseManager
     {
-        private const string DbFileName = "ClientData.db";
+        private string _dbFileName;
 
         public DatabaseManager()
         {
+            // 1. Build a user-writable path inside %LocalAppData%.
+            //    e.g. C:\Users\<User>\AppData\Local\TriplePlayPay
+            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string appFolder = Path.Combine(localAppData, "TriplePlayPay");
+
+            // 2. Ensure the directory exists
+            if (!Directory.Exists(appFolder))
+            {
+                Directory.CreateDirectory(appFolder);
+            }
+
+            // 3. Combine your actual DB file name with that folder
+            _dbFileName = Path.Combine(appFolder, "TerminalGateway.db");
+
+            // Initialize or upgrade the DB schema if necessary
             InitializeDatabase();
         }
 
         private void InitializeDatabase()
         {
-            if (!File.Exists(DbFileName))
+            if (!File.Exists(_dbFileName))
             {
-                SQLiteConnection.CreateFile(DbFileName);
-                using (var connection = new SQLiteConnection($"Data Source={DbFileName};Version=3;"))
+                // Create the .db file in the user-writable folder
+                SQLiteConnection.CreateFile(_dbFileName);
+
+                using (var connection = new SQLiteConnection($"Data Source={_dbFileName};Version=3;"))
                 {
                     connection.Open();
-                    string sql = "create table if not exists client_info (api_key TEXT)";
+
+                    // 4. Create your tables
+                    string sql = @"CREATE TABLE IF NOT EXISTS client_info (api_key TEXT);
+                               CREATE TABLE IF NOT EXISTS terminal_info (ip_address TEXT, lane_id TEXT);";
                     SQLiteCommand command = new SQLiteCommand(sql, connection);
                     command.ExecuteNonQuery();
-
-                    string moreSQL = "create table if not exists terminal_info (ip_address TEXT, lane_id TEXT)";
-                    SQLiteCommand anotherCommand = new SQLiteCommand(moreSQL, connection);
-                    anotherCommand.ExecuteNonQuery();
                 }
             }
         }
 
         public void SaveApiKey(string apiKey)
         {
-            using (var connection = new SQLiteConnection($"Data Source={DbFileName};Version=3;"))
+            using (var connection = new SQLiteConnection($"Data Source={_dbFileName};Version=3;"))
             {
                 connection.Open();
                 string sql = "INSERT INTO client_info (api_key) VALUES (@apiKey)";
@@ -49,7 +65,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Database
 
         public void AddTerminal(string ipAddress, string laneId)
         {
-            using (var connection = new SQLiteConnection($"Data Source={DbFileName};Version=3;"))
+            using (var connection = new SQLiteConnection($"Data Source={_dbFileName};Version=3;"))
             {
                 connection.Open();
                 string sql = "INSERT INTO terminal_info (ip_address, lane_id) VALUES (@ipAddress, @laneId)";
@@ -62,7 +78,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Database
 
         public string GetApiKey()
         {
-            using (var connection = new SQLiteConnection($"Data Source={DbFileName};Version=3;"))
+            using (var connection = new SQLiteConnection($"Data Source={_dbFileName};Version=3;"))
             {
                 connection.Open();
                 string sql = "SELECT api_key FROM client_info ORDER BY ROWID DESC LIMIT 1";
@@ -85,7 +101,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Database
 
             var apiKey = GetApiKey();
 
-            using (var connection = new SQLiteConnection($"Data Source={DbFileName};Version=3;"))
+            using (var connection = new SQLiteConnection($"Data Source={_dbFileName};Version=3;"))
             {
                 connection.Open();
                 var sql = "SELECT ip_address, lane_id FROM terminal_info";
@@ -111,7 +127,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Database
         {
             var terminals = new List<TerminalModel>();
 
-            using (var connection = new SQLiteConnection($"Data Source={DbFileName};Version=3;"))
+            using (var connection = new SQLiteConnection($"Data Source={_dbFileName};Version=3;"))
             {
                 connection.Open();
                 var sql = "SELECT ip_address, lane_id FROM terminal_info";
@@ -135,7 +151,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Database
 
         public bool LaneIdExists(string laneId)
         {
-            using (var connection = new SQLiteConnection($"Data Source={DbFileName};Version=3;"))
+            using (var connection = new SQLiteConnection($"Data Source={_dbFileName};Version=3;"))
             {
                 connection.Open();
                 string sql = "SELECT COUNT(1) FROM terminal_info WHERE lane_id = @laneId";
@@ -149,7 +165,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Database
 
         public bool UpdateTerminal(string laneId, string ipAddress)
         {
-            using (var connection = new SQLiteConnection($"Data Source={DbFileName};Version=3;"))
+            using (var connection = new SQLiteConnection($"Data Source={_dbFileName};Version=3;"))
             {
                 connection.Open();
                 string sql = "UPDATE terminal_info SET ip_address = @ipAddress WHERE lane_id = @laneId";
@@ -173,7 +189,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Database
 
         public bool DeleteTerminal(string laneId)
         {
-            using (var connection = new SQLiteConnection($"Data Source={DbFileName};Version=3;"))
+            using (var connection = new SQLiteConnection($"Data Source={_dbFileName};Version=3;"))
             {
                 connection.Open();
                 string sql = "DELETE FROM terminal_info WHERE lane_id = @laneId";

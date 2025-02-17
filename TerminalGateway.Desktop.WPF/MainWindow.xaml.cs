@@ -88,6 +88,7 @@ namespace TerminalGateway.Desktop.WPF
                 else
                 {
                     MessageBox.Show("Api Key Successfully Added!");
+                    _databaseManager.SaveApiKey(apiKey);
                     Logger.SetApiKeyAndInitializeLogging();
                     Log.Information("API Key Succeessfully Added!");
                 }
