@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using TerminalGateway.Desktop.WPF.Communications.Models;
 using TerminalGateway.Desktop.WPF.Communications.Database;
+using System.ComponentModel;
 
 namespace TerminalGateway.Desktop.WPF.Communications.Websocket
 {
@@ -12,7 +13,25 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
         private DatabaseManager _databaseManager;
         private List<WebsocketConnectionModel> _websocketConnectionModels;
         private Dictionary<string, WebsocketManager> _websocketConnections;
-        public bool IsConnected { get; private set; }
+        private bool _isConnected;
+        public bool IsConnected
+        {
+            get => _isConnected;
+            private set
+            {
+                if (_isConnected != value)
+                {
+                    _isConnected = value;
+                    OnPropertyChanged(nameof(IsConnected));
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         public WebsocketsManager(DatabaseManager databaseManager) 
         {
@@ -22,7 +41,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
 
         public void SyncWebsocketConnections()
         {
-            IsConnected = false;
+            IsConnected = false;  // start it off false each time
             _websocketConnectionModels = _databaseManager.GetAllWebsocketConnectionEntities();
             foreach (var model in _websocketConnectionModels)
             {
@@ -35,29 +54,47 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
                         // ApiKey has changed, reconnect with new ApiKey
                         currentConnection.CloseWebsocket();
                         currentConnection = new WebsocketManager(model);
+                        currentConnection.ConnectionStateChanged += OnChildConnectionStateChanged;
                         currentConnection.Connect();
                         _websocketConnections[model.LaneId] = currentConnection;
-                        IsConnected = true;
                     }
                     if (currentConnection.ipAddress != model.IpAddress)
                     {
                         // ApiKey has changed, reconnect with new ApiKey
                         currentConnection.CloseWebsocket();
                         currentConnection = new WebsocketManager(model);
+                        currentConnection.ConnectionStateChanged += OnChildConnectionStateChanged;
                         currentConnection.Connect();
                         _websocketConnections[model.LaneId] = currentConnection;
-                        IsConnected = true;
                     }
                 }
                 else
                 {
                     // If the connection does not exist, create and connect it
                     var newConnection = new WebsocketManager(model);
+                    // Subscribe to child's event
+                    newConnection.ConnectionStateChanged += (sender, state) =>
+                    {
+                        // A single child changed, so let's re‐compute
+                        var anyConnected = _websocketConnections.Values
+                            .Any(child => child.isConnected);
+                        IsConnected = anyConnected;
+                    };
+                    newConnection.ConnectionStateChanged += OnChildConnectionStateChanged;
                     newConnection.Connect();
                     _websocketConnections[model.LaneId] = newConnection;
-                    IsConnected = true;
                 }
             }
+            IsConnected = _websocketConnections.Values.Any(x => x.isConnected);
+        }
+        private void OnChildConnectionStateChanged(object sender, bool childIsConnected)
+        {
+            // Whenever one child changes, recalc aggregator’s overall status
+            // “ANY” approach:
+            IsConnected = _websocketConnections.Values.Any(c => c.isConnected);
+
+            // Or “ALL” approach:
+            // IsConnected = _websocketConnections.Values.All(c => c.isConnected);
         }
     }
 }

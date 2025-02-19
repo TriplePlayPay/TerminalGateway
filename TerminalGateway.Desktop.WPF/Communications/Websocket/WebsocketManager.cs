@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Timers;
 using System.Text.Json;
 using TerminalGateway.Desktop.WPF.Communications.Terminal;
 using TerminalGateway.Desktop.WPF.Communications.Models;
@@ -25,6 +24,11 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
 
         public bool isConnected { get; private set; }
 
+        public event EventHandler<bool> ConnectionStateChanged;
+
+        private System.Timers.Timer _heartbeatTimer;
+        private const int HEARTBEAT_INTERVAL_MS = 15000; // 15 seconds, pick your interval
+
         private WebsocketConnectionModel _websocketConnectionModel;
 
         public WebsocketManager(WebsocketConnectionModel websocketConnectionModel)
@@ -44,6 +48,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
                 _webSocket.OnClose -= WebSocket_OnClose;
                 _webSocket.OnError -= WebSocket_OnError;
                 _webSocket.OnMessage -= WebSocket_OnMessage;
+                _webSocket.OnOpen -= WebSocket_OnOpen;
                 _webSocket.Close();
             }
 
@@ -55,6 +60,9 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
 
             // Optional: Subscribe to OnError
             _webSocket.OnError += WebSocket_OnError;
+
+            // on open emit the proper event
+            _webSocket.OnOpen += WebSocket_OnOpen;
 
             // Logging config
             _webSocket.Log.Level = LogLevel.Trace;
@@ -72,15 +80,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
 
             if (isConnected)
             {
-                // Send AUTH
-                var authModel = new WebsocketTransmissionAuthModel
-                {
-                    Type = "AUTH",
-                    ApiKey = apiKey,
-                    LaneId = laneId,
-                };
-                var websocketConnectionString = JsonSerializer.Serialize(authModel);
-                _webSocket.Send(Encoding.UTF8.GetBytes(websocketConnectionString));
+                StartHeartbeat(); // start sending periodic heartbeats
             }
             else
             {
@@ -89,10 +89,62 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
             }
         }
 
+        private void WebSocket_OnOpen(object sender, EventArgs e)
+        {
+            // reset backoff
+            _reconnectDelay = 1000;
+            isConnected = true;
+            ConnectionStateChanged?.Invoke(this, true);
+            SendAuth();
+            StartHeartbeat();
+        }
+
+        private void StartHeartbeat()
+        {
+            StopHeartbeat(); // safety in case it was already running
+
+            _heartbeatTimer = new System.Timers.Timer(HEARTBEAT_INTERVAL_MS);
+            _heartbeatTimer.Elapsed += (s, e) => SendHeartbeat();
+            _heartbeatTimer.AutoReset = true;
+            _heartbeatTimer.Start();
+        }
+
+        private void StopHeartbeat()
+        {
+            if (_heartbeatTimer != null)
+            {
+                _heartbeatTimer.Stop();
+                _heartbeatTimer.Elapsed -= (s, e) => SendHeartbeat();
+                _heartbeatTimer.Dispose();
+                _heartbeatTimer = null;
+            }
+        }
+
+        private void SendHeartbeat()
+        {
+            if (_webSocket != null && _webSocket.IsAlive)
+            {
+                var heartbeat = new
+                {
+                    Type = "HEARTBEAT",
+                    ApiKey = apiKey,
+                    LaneId = laneId,
+                    // Any other data you want
+                };
+                string heartbeatJson = JsonSerializer.Serialize(heartbeat);
+                _webSocket.Send(Encoding.UTF8.GetBytes(heartbeatJson));
+                Log.Debug("Sent heartbeat.");
+            }
+        }   
+
         private void WebSocket_OnClose(object sender, CloseEventArgs e)
         {
             Log.Information($"WebSocket closed: {e.Reason}");
             isConnected = false;
+            ConnectionStateChanged?.Invoke(this, false);
+
+            // Stop sending heartbeats while we’re disconnected
+            StopHeartbeat();
 
             // If not intentional, schedule a reconnect
             Log.Information($"Reconnecting in {_reconnectDelay / 1000} seconds...");
@@ -154,7 +206,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
         {
             // Handle inbound message
             TerminalMessageModel terminalMessageModel = WebsocketSerializer.DeserializeTerminalMessageModel(e.Data, _websocketConnectionModel);
-
+            Log.Information("Message Received: " + e.Data);
             // Because we're creating one websocket per instance of the terminal, we need to 
             // double check that the laneId value passed to us from the websocket is equal to this
             // uniquely valued laneId.
@@ -191,8 +243,23 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
             }
         }
 
+        private void SendAuth()
+        {
+            var authModel = new WebsocketTransmissionAuthModel
+            {
+                Type = "AUTH",
+                ApiKey = apiKey,
+                LaneId = laneId,
+            };
+            var websocketConnectionString = JsonSerializer.Serialize(authModel);
+            _webSocket.Send(Encoding.UTF8.GetBytes(websocketConnectionString));
+            Log.Debug("Sent AUTH message.");
+        }
+
         public void CloseWebsocket()
         {
+            isConnected = false;
+            ConnectionStateChanged?.Invoke(this, false);
             Log.Warning("Websocket Closing");
             _webSocket.Close();
             isConnected = false;

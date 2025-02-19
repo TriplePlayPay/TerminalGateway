@@ -15,7 +15,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Rest
 
         public ApiKeyHttpClientFactory() => httpClient = new HttpClient();
 
-        public void Configure(IConfiguration configuration) => httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer" + configuration["apiKey"]);
+        public void Configure(IConfiguration configuration) => httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + configuration["apiKey"]);
 
         public async Task<HttpResponseMessage> PostAsync(string requestUri, Stream contentStream, CancellationToken cancellationToken)
         {

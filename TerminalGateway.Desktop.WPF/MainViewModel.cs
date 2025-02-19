@@ -68,25 +68,7 @@ namespace TerminalGateway.Desktop.WPF
 
         public MainViewModel()
         {
-            //_databaseManager = new DatabaseManager();
 
-            //// be aware of api key for potential downstream operations
-            //bool hasApiKey = false;
-            //string apiKey = _databaseManager.GetApiKey();
-            //if (!string.IsNullOrEmpty(apiKey))
-            //{
-            //    ApiKey = apiKey;
-            //    hasApiKey = true;
-            //}
-            //List<TerminalModel> terminals = _databaseManager.GetTerminals();
-            //Terminals = new ObservableCollection<TerminalModel>();
-            //if (terminals.Count > 0)
-            //{
-            //    terminals.ForEach(terminal =>
-            //    {
-            //        Terminals.Add(new TerminalModel { LaneId = terminal.LaneId, IpAddress = terminal.IpAddress });
-            //    });
-            //}
         }
     }
 }

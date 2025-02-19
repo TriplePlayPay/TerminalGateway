@@ -48,6 +48,7 @@ namespace TerminalGateway.Desktop.WPF
                 viewModel.PropertyChanged += ViewModel_PropertyChanged;
                 viewModel.ApiKeyChanged += ViewModel_ApiKeyChanged;
                 viewModel.WebsocketChanged += ViewModel_WebsocketChanged;
+                _websocketsManager.PropertyChanged += WebsocketsManager_PropertyChanged;
             }
 
             // populate the terminals in a way that'll connect them to websockets
@@ -63,12 +64,36 @@ namespace TerminalGateway.Desktop.WPF
             ((MainViewModel)DataContext).Terminals = shownTerminals;
         }
 
+        private void WebsocketsManager_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            // Force this code to run on the UI thread
+            if (!Dispatcher.CheckAccess())
+            {
+                // We are *not* on the UI thread, so dispatch the call to the UI thread.
+                Dispatcher.Invoke(() => WebsocketsManager_PropertyChanged(sender, e));
+                return;
+            }
+
+            // Now we're on the UI thread, safe to access DataContext and update the ViewModel
+            if (e.PropertyName == nameof(WebsocketsManager.IsConnected))
+            {
+                Log.Information("WebsocketsManager_PropertyChanged: " + _websocketsManager.IsConnected);
+                ((MainViewModel)DataContext).IsWebSocketConnected = _websocketsManager.IsConnected;
+            }
+        }
+
         private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             // React to property changes in general
             if (e.PropertyName == nameof(MainViewModel.Terminals) && ((MainViewModel)DataContext).Terminals.Count > 0)
             {
                 _websocketsManager.SyncWebsocketConnections();
+                ((MainViewModel)DataContext).IsWebSocketConnected = _websocketsManager.IsConnected;
+            }
+
+            if (e.PropertyName == nameof(WebsocketsManager.IsConnected))
+            {
+                Log.Information("ViewModel_PropertyChanged: " + _websocketsManager.IsConnected);
                 ((MainViewModel)DataContext).IsWebSocketConnected = _websocketsManager.IsConnected;
             }
         }
@@ -100,7 +125,8 @@ namespace TerminalGateway.Desktop.WPF
             // React to changes in the WebSocket connection status
             if (e.PropertyName == "IsWebSocketConnected")
             {
-                Log.Debug("WebSocket connection status has changed.");
+                Log.Debug("WebSocket connection status has changed: " + _websocketsManager.IsConnected);
+                ((MainViewModel)DataContext).IsWebSocketConnected = _websocketsManager.IsConnected;
             }
         }
 
@@ -179,22 +205,6 @@ namespace TerminalGateway.Desktop.WPF
                 return;
             }
             ((MainViewModel)DataContext).ApiKey = apiKey;
-            // Check if api_key exists in your database
-            // If it does, update it. If not, add it to the database.
-            //bool isApiKeyValid = await ApiKeyManager.IsApiKeyValid(apiKey); // Replace with actual check
-            //if (isApiKeyValid)
-            //{
-            //    // Update logic here
-            //    _databaseManager.SaveApiKey(apiKey);
-            //    MessageBox.Show("Api Key updated successfully.");
-            //    ((MainViewModel)DataContext).ApiKey = apiKey;
-               
-            //}
-            //else
-            //{
-            //    // Add logic here
-            //    MessageBox.Show("Api Key Error - Check and Retry. Should look something like: 8f1e01b7-a6e6-441a-b50c-cf9ce09aa0e3");
-            //}
         }
     }
 }
