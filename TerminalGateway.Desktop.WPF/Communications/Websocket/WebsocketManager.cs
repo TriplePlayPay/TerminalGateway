@@ -52,7 +52,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
                 _webSocket.Close();
             }
 
-            _webSocket = new WebSocket("wss://tripleplaypay.com/pax");
+            _webSocket = new WebSocket("wss://tripleplaypay.network/api/terminal-gateway");
             _webSocket.OnMessage += WebSocket_OnMessage;
 
             // THIS IS CRITICAL: Actually subscribe to OnClose
@@ -70,7 +70,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
             {
                 Log.Debug($"[{logData.Level}] {logData.Message}");
             };
-            _webSocket.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls13;
+            _webSocket.SslConfiguration.EnabledSslProtocols = SslProtocols.Tls12;
 
             // Reset reconnect delay in case this is a successful new connect
             _reconnectDelay = 1000;
