@@ -14,5 +14,6 @@ namespace TerminalGateway.Desktop.WPF.Communications.Models
         public string LaneId { get; set; }
         public string Action {  get; set; }
         public string TerminalPaymentType { get; set; }
+        public string TerminalType { get; set; }
     }
 }

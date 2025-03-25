@@ -17,7 +17,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Models
         public string Message { get; set; }
 
         [JsonPropertyName("details")]
-        public IDeviceResponse? Details { get; set; }
+        public dynamic Details { get; set; }
 
         [JsonPropertyName("request_id")]
         public string RequestId { get; set; }

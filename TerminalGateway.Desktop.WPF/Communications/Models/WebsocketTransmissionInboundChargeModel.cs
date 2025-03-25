@@ -23,5 +23,8 @@ namespace TerminalGateway.Desktop.WPF.Communications.Models
 
         [JsonPropertyName("terminal_payment_type")]
         public string TerminalPaymentType { get; set; }
+
+        [JsonPropertyName("terminal_type")]
+        public string TerminalType { get; set; }
     }
 }

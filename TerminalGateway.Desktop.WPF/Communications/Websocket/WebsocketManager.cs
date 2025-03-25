@@ -6,6 +6,7 @@ using System.Timers;
 using System.Text.Json;
 using TerminalGateway.Desktop.WPF.Communications.Terminal;
 using TerminalGateway.Desktop.WPF.Communications.Models;
+using TerminalGateway.Desktop.WPF.Communications.NewPos;
 using WebSocketSharp;
 using System.Diagnostics;
 using System.Security.Authentication;
@@ -212,7 +213,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
             // uniquely valued laneId.
             if (terminalMessageModel.LaneId == laneId)
             {
-                if (terminalMessageModel.Action == "charge")
+                if (terminalMessageModel.Action == "charge" && terminalMessageModel.TerminalType == "PAX")
                 {
                     try
                     {
@@ -221,6 +222,37 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
                         var encodedChargeString = Encoding.UTF8.GetBytes(websocketChargeString);
                         _webSocket.Send(encodedChargeString);
                     } catch (Exception ex)
+                    {
+                        Log.Error(ex.Message);
+                    }
+                }
+                if (terminalMessageModel.Action == "charge" && terminalMessageModel.TerminalType == "NEWPOS")
+                {
+                    try
+                    {
+                        var tppDeviceInput = new TPPDeviceCallerInput
+                        {
+                            Host = ipAddress,
+                            Port = 1419,
+                            MerchantKey = apiKey,
+                            PaymentType = terminalMessageModel.TerminalPaymentType
+                        };
+                        var result = TPPDeviceCaller.SendTerminalMessage(tppDeviceInput);
+                        WebsocketTransmissionChargeModel websocketTransmissionChargeModel = new WebsocketTransmissionChargeModel
+                        {
+                            Status = true,
+                            Message = "",
+                            Details = result,
+                            RequestId = terminalMessageModel.RequestId,
+                            ApiKey = apiKey,
+                            LaneId = terminalMessageModel.LaneId
+                        };
+
+                        var websocketChargeString = JsonSerializer.Serialize(websocketTransmissionChargeModel);
+                        var encodedChargeString = Encoding.UTF8.GetBytes(websocketChargeString);
+                        _webSocket.Send(encodedChargeString);
+                    }
+                    catch (Exception ex)
                     {
                         Log.Error(ex.Message);
                     }

@@ -20,6 +20,7 @@ namespace TerminalGateway.Desktop.WPF.Communications.Websocket
                 RequestId = inboundChargeModel.RequestId,
                 Action = inboundChargeModel.Action,
                 TerminalPaymentType = inboundChargeModel.TerminalPaymentType,
+                TerminalType = inboundChargeModel.TerminalType
             };
         }
     }
