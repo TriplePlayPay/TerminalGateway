@@ -1,52 +1,82 @@
 ﻿"DeployProject"
 {
-    "VSVersion" = "3:800"
-    "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
-    "IsWebType" = "8:FALSE"
-    "ProjectName" = "8:TriplePlayPayTerminalGateway"
-    "LanguageId" = "3:1033"
-    "CodePage" = "3:1252"
-    "UILanguageId" = "3:1033"
-    "SccProjectName" = "8:"
-    "SccLocalPath" = "8:"
-    "SccAuxPath" = "8:"
-    "SccProvider" = "8:"
+"VSVersion" = "3:800"
+"ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
+"IsWebType" = "8:FALSE"
+"ProjectName" = "8:TriplePlayPayTerminalGateway"
+"LanguageId" = "3:1033"
+"CodePage" = "3:1252"
+"UILanguageId" = "3:1033"
+"SccProjectName" = "8:"
+"SccLocalPath" = "8:"
+"SccAuxPath" = "8:"
+"SccProvider" = "8:"
     "Hierarchy"
     {
         "Entry"
         {
-            "MsmKey" = "8:_SELFCONTAINED_EXE"
-            "OwnerKey" = "8:_UNDEFINED"
-            "MsmSig" = "8:_UNDEFINED"
+        "MsmKey" = "8:_SELFCONTAINED_EXE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
         }
     }
     "Configurations"
     {
         "Debug"
         {
-            "DisplayName" = "8:Debug"
-            "IsDebugOnly" = "11:TRUE"
-            "IsReleaseOnly" = "11:FALSE"
-            "OutputFilename" = "8:Debug\\TriplePlayPayTerminalGateway.msi"
-            "PackageFilesAs" = "3:2"
-            "PackageFileSize" = "3:-2147483648"
-            "CabType" = "3:1"
-            "Compression" = "3:2"
-            "SignOutput" = "11:FALSE"
-            "InstallerBootstrapper" = "3:2"
+        "DisplayName" = "8:Debug"
+        "IsDebugOnly" = "11:TRUE"
+        "IsReleaseOnly" = "11:FALSE"
+        "OutputFilename" = "8:Debug\\TriplePlayPayTerminalGateway.msi"
+        "PackageFilesAs" = "3:2"
+        "PackageFileSize" = "3:-2147483648"
+        "CabType" = "3:1"
+        "Compression" = "3:2"
+        "SignOutput" = "11:FALSE"
+        "CertificateFile" = "8:"
+        "PrivateKeyFile" = "8:"
+        "TimeStampServer" = "8:"
+        "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
-            "DisplayName" = "8:Release"
-            "IsDebugOnly" = "11:FALSE"
-            "IsReleaseOnly" = "11:TRUE"
-            "OutputFilename" = "8:Release\\TriplePlayPayTerminalGateway.msi"
-            "PackageFilesAs" = "3:2"
-            "PackageFileSize" = "3:-2147483648"
-            "CabType" = "3:1"
-            "Compression" = "3:2"
-            "SignOutput" = "11:FALSE"
-            "InstallerBootstrapper" = "3:2"
+        "DisplayName" = "8:Release"
+        "IsDebugOnly" = "11:FALSE"
+        "IsReleaseOnly" = "11:TRUE"
+        "OutputFilename" = "8:Release\\TriplePlayPayTerminalGateway.msi"
+        "PackageFilesAs" = "3:2"
+        "PackageFileSize" = "3:-2147483648"
+        "CabType" = "3:1"
+        "Compression" = "3:2"
+        "SignOutput" = "11:FALSE"
+        "CertificateFile" = "8:"
+        "PrivateKeyFile" = "8:"
+        "TimeStampServer" = "8:"
+        "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -56,14 +86,24 @@
         }
         "DefaultFeature"
         {
-            "Name" = "8:DefaultFeature"
-            "Title" = "8:"
-            "Description" = "8:"
+        "Name" = "8:DefaultFeature"
+        "Title" = "8:"
+        "Description" = "8:"
         }
         "ExternalPersistence"
         {
             "LaunchCondition"
             {
+                "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_759775FA4D77482AB8CCA4546AC84093"
+                {
+                "Name" = "8:.NET Core"
+                "Message" = "8:[VSDNETCOREMSG]"
+                "AllowLaterVersions" = "11:FALSE"
+                "InstallUrl" = "8:https://dotnet.microsoft.com/download/dotnet-core/[NetCoreVerMajorDotMinor]"
+                "IsNETCore" = "11:TRUE"
+                "Architecture" = "2:0"
+                "Runtime" = "2:0"
+                }
             }
         }
         "File"
@@ -74,24 +114,39 @@
         }
         "Folder"
         {
-            "{1525181F-901A-416C-8A58-119130FE478E}:_DESKTOPFOLDER"
-            {
-                "Name" = "8:#1916"
-                "AlwaysCreate" = "11:FALSE"
-                "Property" = "8:DesktopFolder"
-            }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_APPFOLDER"
             {
-                "DefaultLocation" = "8:[ProgramFiles64Folder][Manufacturer]\\[ProductName]"
-                "Name" = "8:#1925"
-                "AlwaysCreate" = "11:FALSE"
-                "Property" = "8:TARGETDIR"
+            "DefaultLocation" = "8:[ProgramFiles64Folder][Manufacturer]\\[ProductName]"
+            "Name" = "8:#1925"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:TARGETDIR"
+                "Folders"
+                {
+                }
+            }
+            "{1525181F-901A-416C-8A58-119130FE478E}:_DESKTOPFOLDER"
+            {
+            "Name" = "8:#1916"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:DesktopFolder"
+                "Folders"
+                {
+                }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_PROGRAMMENUFOLDER"
             {
-                "Name" = "8:#1919"
-                "AlwaysCreate" = "11:FALSE"
-                "Property" = "8:ProgramMenuFolder"
+            "Name" = "8:#1919"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:ProgramMenuFolder"
+                "Folders"
+                {
+                }
             }
         }
         "LaunchCondition"
@@ -102,24 +157,72 @@
         }
         "MsiBootstrapper"
         {
-            "LangId" = "3:1033"
-            "RequiresElevation" = "11:FALSE"
+        "LangId" = "3:1033"
+        "RequiresElevation" = "11:FALSE"
         }
         "Product"
         {
-            "Name" = "8:Microsoft Visual Studio"
-            "ProductName" = "8:TriplePlayPayTerminalGateway"
-            "ProductCode" = "8:{5CB8AFC7-374F-46A3-8D04-1C4FD27CB86C}"
-            "PackageCode" = "8:{AAAA1111-2222-3333-4444-5555BBBBCCCC}"
-            "UpgradeCode" = "8:{0D6D59DB-225A-4582-BD6D-ECD0AA18F595}"
-            "DetectNewerInstalledVersion" = "11:TRUE"
-            "InstallAllUsers" = "11:FALSE"
-            "ProductVersion" = "8:1.0.0"
-            "Manufacturer" = "8:TriplePlayPay"
-            "TargetPlatform" = "3:1"
+        "Name" = "8:Microsoft Visual Studio"
+        "ProductName" = "8:TriplePlayPayTerminalGateway"
+        "ProductCode" = "8:{BFD5BFBA-F85F-4A78-B1BA-3235B184BB9C}"
+        "PackageCode" = "8:{087AA672-47E1-4203-AEFB-E030E82569EE}"
+        "UpgradeCode" = "8:{0D6D59DB-225A-4582-BD6D-ECD0AA18F595}"
+        "AspNetVersion" = "8:4.0.30319.0"
+        "RestartWWWService" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
+        "DetectNewerInstalledVersion" = "11:TRUE"
+        "InstallAllUsers" = "11:FALSE"
+        "ProductVersion" = "8:1.0.1"
+        "Manufacturer" = "8:TriplePlayPay"
+        "ARPHELPTELEPHONE" = "8:"
+        "ARPHELPLINK" = "8:"
+        "Title" = "8:Triple Play Pay Terminal Gateway"
+        "Subject" = "8:"
+        "ARPCONTACT" = "8:"
+        "Keywords" = "8:"
+        "ARPCOMMENTS" = "8:"
+        "ARPURLINFOABOUT" = "8:"
+        "ARPPRODUCTICON" = "8:"
+        "ARPIconIndex" = "3:0"
+        "SearchPath" = "8:"
+        "UseSystemSearchPath" = "11:TRUE"
+        "TargetPlatform" = "3:1"
+        "PreBuildEvent" = "8:"
+        "PostBuildEvent" = "8:"
+        "RunPostBuildEvent" = "3:0"
         }
         "Registry"
         {
+            "HKLM"
+            {
+                "Keys"
+                {
+                }
+            }
+            "HKCU"
+            {
+                "Keys"
+                {
+                }
+            }
+            "HKCR"
+            {
+                "Keys"
+                {
+                }
+            }
+            "HKU"
+            {
+                "Keys"
+                {
+                }
+            }
+            "HKPU"
+            {
+                "Keys"
+                {
+                }
+            }
         }
         "Sequences"
         {
@@ -128,11 +231,17 @@
         {
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DESKTOP_SHORTCUT"
             {
-                "Name" = "8:TriplePlayPayTerminalGateway"
-                "ShowCmd" = "3:1"
-                "Target" = "8:_SELFCONTAINED_EXE"
-                "Folder" = "8:_DESKTOPFOLDER"
-                "WorkingFolder" = "8:_APPFOLDER"
+            "Name" = "8:TriplePlayPayTerminalGateway"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_SELFCONTAINED_EXE"
+            "Folder" = "8:_DESKTOPFOLDER"
+            "WorkingFolder" = "8:_APPFOLDER"
+            "Icon" = "8:"
+            "Feature" = "8:"
             }
         }
         "UserInterface"
@@ -145,12 +254,31 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_SELFCONTAINED_EXE"
             {
-                "SourcePath" = "8:Deploy\\TerminalGateway.Desktop.WPF.exe"
-                "Folder" = "8:_APPFOLDER"
-                "OutputConfiguration" = "8:Release|x64"
-                "OutputGroupCanonicalName" = "8:PublishItems"
-                "OutputProjectGuid" = "8:{82A6F7D4-EDD0-4B43-947A-6622A1F16857}"
-                "ShowKeyOutput" = "11:TRUE"
+            "SourcePath" = "8:..\\TerminalGateway.Desktop.WPF\\obj\\x64\\Release\\net6.0-windows\\apphost.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_APPFOLDER"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:Release|x64"
+            "OutputGroupCanonicalName" = "8:PublishItems"
+            "OutputProjectGuid" = "8:{82A6F7D4-EDD0-4B43-947A-6622A1F16857}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
             }
         }
     }
